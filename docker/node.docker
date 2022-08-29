@@ -1,8 +1,8 @@
-# RUN-USING:      docker run --rm --name=node codewars/node-runner --help
-# EXAMPLE USAGE:  docker run --rm codewars/node-runner run -l javascript -c "console.log(1+1)"
+# RUN-USING:      podman run --rm --name=node theflies/node-runner --help
+# EXAMPLE USAGE:  podman run --rm theflies/node-runner run -l javascript -c "console.log(1+1)"
 
 # Pull base image.
-FROM codewars/base-runner
+FROM --platform=linux/amd64 theflies/base-runner
 
 # Install additional libraries
 # NOTE: due to this issue https://github.com/npm/npm/issues/9863 we need to install everything at once, which sucks
@@ -10,110 +10,105 @@ FROM codewars/base-runner
 # NOTE: we dont configure these via package.json in order to prevent having to re-install them on each code change
 
 # Install Node manager so that we can have multiple versions of node
-RUN npm -g install n
-RUN n 0.10.33
-RUN n 8.1.3
-# 6.x must come last since it's the version for the runner itself
-RUN n 6.11.0
+RUN pnpm -g install n
+RUN n 18.8.0
+RUN n 16.17.0
 
 # Install Coffeescript
-RUN npm -g install "coffee-script@^1.12"
-
-# install TypeScript type definitions
-RUN npm install -gq "typings@^2"
+RUN pnpm -g install "coffeescript@^2.7.0"
 
 # Install TypeScript
-RUN npm -g install "typescript@^2.4"
+RUN pnpm -g install "typescript@^4.8.2"
 
 # Install test ethereum client so that we can test basic network actions
-RUN npm -g install "ethereumjs-testrpc@4.0.1"
+RUN pnpm -g install "ganache@^7.4.1"
 
-RUN set -ex; \
-  mkdir -p /runner/frameworks/javascript/angular; \
-  cd /runner/frameworks/javascript/angular; \
-  wget -xnH -nv \
-    https://code.angularjs.org/1.2.9/angular-animate.js \
-    https://code.angularjs.org/1.2.9/angular-cookies.js \
-    https://code.angularjs.org/1.2.9/angular-mocks.js \
-    https://code.angularjs.org/1.2.9/angular-resource.js \
-    https://code.angularjs.org/1.2.9/angular-route.js \
-    https://code.angularjs.org/1.2.9/angular-sanitize.js \
-    https://code.angularjs.org/1.2.9/angular-touch.js \
-    https://code.angularjs.org/1.2.9/angular.js \
-    \
-    https://code.angularjs.org/1.3.9/angular-animate.js \
-    https://code.angularjs.org/1.3.9/angular-aria.js \
-    https://code.angularjs.org/1.3.9/angular-cookies.js \
-    https://code.angularjs.org/1.3.9/angular-messages.js \
-    https://code.angularjs.org/1.3.9/angular-mocks.js \
-    https://code.angularjs.org/1.3.9/angular-resource.js \
-    https://code.angularjs.org/1.3.9/angular-route.js \
-    https://code.angularjs.org/1.3.9/angular-sanitize.js \
-    https://code.angularjs.org/1.3.9/angular-touch.js \
-    https://code.angularjs.org/1.3.9/angular.js \
-    \
-    https://code.angularjs.org/1.4.9/angular-animate.js \
-    https://code.angularjs.org/1.4.9/angular-aria.js \
-    https://code.angularjs.org/1.4.9/angular-cookies.js \
-    https://code.angularjs.org/1.4.9/angular-message-format.js \
-    https://code.angularjs.org/1.4.9/angular-messages.js \
-    https://code.angularjs.org/1.4.9/angular-mocks.js \
-    https://code.angularjs.org/1.4.9/angular-resource.js \
-    https://code.angularjs.org/1.4.9/angular-route.js \
-    https://code.angularjs.org/1.4.9/angular-sanitize.js \
-    https://code.angularjs.org/1.4.9/angular-touch.js \
-    https://code.angularjs.org/1.4.9/angular.js \
-    \
-    https://code.angularjs.org/1.5.11/angular-animate.js \
-    https://code.angularjs.org/1.5.11/angular-aria.js \
-    https://code.angularjs.org/1.5.11/angular-cookies.js \
-    https://code.angularjs.org/1.5.11/angular-loader.js \
-    https://code.angularjs.org/1.5.11/angular-message-format.js \
-    https://code.angularjs.org/1.5.11/angular-messages.js \
-    https://code.angularjs.org/1.5.11/angular-mocks.js \
-    https://code.angularjs.org/1.5.11/angular-parse-ext.js \
-    https://code.angularjs.org/1.5.11/angular-resource.js \
-    https://code.angularjs.org/1.5.11/angular-route.js \
-    https://code.angularjs.org/1.5.11/angular-sanitize.js \
-    https://code.angularjs.org/1.5.11/angular-scenario.js \
-    https://code.angularjs.org/1.5.11/angular-touch.js \
-    https://code.angularjs.org/1.5.11/angular.js \
-    \
-    https://code.angularjs.org/1.5.8/angular-animate.js \
-    https://code.angularjs.org/1.5.8/angular-aria.js \
-    https://code.angularjs.org/1.5.8/angular-cookies.js \
-    https://code.angularjs.org/1.5.8/angular-message-format.js \
-    https://code.angularjs.org/1.5.8/angular-messages.js \
-    https://code.angularjs.org/1.5.8/angular-mocks.js \
-    https://code.angularjs.org/1.5.8/angular-parse-ext.js \
-    https://code.angularjs.org/1.5.8/angular-resource.js \
-    https://code.angularjs.org/1.5.8/angular-route.js \
-    https://code.angularjs.org/1.5.8/angular-sanitize.js \
-    https://code.angularjs.org/1.5.8/angular-touch.js \
-    https://code.angularjs.org/1.5.8/angular.js \
-    \
-    https://code.angularjs.org/1.6.5/angular-animate.js \
-    https://code.angularjs.org/1.6.5/angular-aria.js \
-    https://code.angularjs.org/1.6.5/angular-cookies.js \
-    https://code.angularjs.org/1.6.5/angular-loader.js \
-    https://code.angularjs.org/1.6.5/angular-message-format.js \
-    https://code.angularjs.org/1.6.5/angular-messages.js \
-    https://code.angularjs.org/1.6.5/angular-mocks.js \
-    https://code.angularjs.org/1.6.5/angular-parse-ext.js \
-    https://code.angularjs.org/1.6.5/angular-resource.js \
-    https://code.angularjs.org/1.6.5/angular-route.js \
-    https://code.angularjs.org/1.6.5/angular-sanitize.js \
-    https://code.angularjs.org/1.6.5/angular-scenario.js \
-    https://code.angularjs.org/1.6.5/angular-touch.js \
-    https://code.angularjs.org/1.6.5/angular.js; \
-  chmod -R a+r .;
+# RUN set -ex; \
+#   mkdir -p /runner/frameworks/javascript/angular; \
+#   cd /runner/frameworks/javascript/angular; \
+#   wget -xnH -nv \
+#     https://code.angularjs.org/1.2.9/angular-animate.js \
+#     https://code.angularjs.org/1.2.9/angular-cookies.js \
+#     https://code.angularjs.org/1.2.9/angular-mocks.js \
+#     https://code.angularjs.org/1.2.9/angular-resource.js \
+#     https://code.angularjs.org/1.2.9/angular-route.js \
+#     https://code.angularjs.org/1.2.9/angular-sanitize.js \
+#     https://code.angularjs.org/1.2.9/angular-touch.js \
+#     https://code.angularjs.org/1.2.9/angular.js \
+#     \
+#     https://code.angularjs.org/1.3.9/angular-animate.js \
+#     https://code.angularjs.org/1.3.9/angular-aria.js \
+#     https://code.angularjs.org/1.3.9/angular-cookies.js \
+#     https://code.angularjs.org/1.3.9/angular-messages.js \
+#     https://code.angularjs.org/1.3.9/angular-mocks.js \
+#     https://code.angularjs.org/1.3.9/angular-resource.js \
+#     https://code.angularjs.org/1.3.9/angular-route.js \
+#     https://code.angularjs.org/1.3.9/angular-sanitize.js \
+#     https://code.angularjs.org/1.3.9/angular-touch.js \
+#     https://code.angularjs.org/1.3.9/angular.js \
+#     \
+#     https://code.angularjs.org/1.4.9/angular-animate.js \
+#     https://code.angularjs.org/1.4.9/angular-aria.js \
+#     https://code.angularjs.org/1.4.9/angular-cookies.js \
+#     https://code.angularjs.org/1.4.9/angular-message-format.js \
+#     https://code.angularjs.org/1.4.9/angular-messages.js \
+#     https://code.angularjs.org/1.4.9/angular-mocks.js \
+#     https://code.angularjs.org/1.4.9/angular-resource.js \
+#     https://code.angularjs.org/1.4.9/angular-route.js \
+#     https://code.angularjs.org/1.4.9/angular-sanitize.js \
+#     https://code.angularjs.org/1.4.9/angular-touch.js \
+#     https://code.angularjs.org/1.4.9/angular.js \
+#     \
+#     https://code.angularjs.org/1.5.11/angular-animate.js \
+#     https://code.angularjs.org/1.5.11/angular-aria.js \
+#     https://code.angularjs.org/1.5.11/angular-cookies.js \
+#     https://code.angularjs.org/1.5.11/angular-loader.js \
+#     https://code.angularjs.org/1.5.11/angular-message-format.js \
+#     https://code.angularjs.org/1.5.11/angular-messages.js \
+#     https://code.angularjs.org/1.5.11/angular-mocks.js \
+#     https://code.angularjs.org/1.5.11/angular-parse-ext.js \
+#     https://code.angularjs.org/1.5.11/angular-resource.js \
+#     https://code.angularjs.org/1.5.11/angular-route.js \
+#     https://code.angularjs.org/1.5.11/angular-sanitize.js \
+#     https://code.angularjs.org/1.5.11/angular-scenario.js \
+#     https://code.angularjs.org/1.5.11/angular-touch.js \
+#     https://code.angularjs.org/1.5.11/angular.js \
+#     \
+#     https://code.angularjs.org/1.5.8/angular-animate.js \
+#     https://code.angularjs.org/1.5.8/angular-aria.js \
+#     https://code.angularjs.org/1.5.8/angular-cookies.js \
+#     https://code.angularjs.org/1.5.8/angular-message-format.js \
+#     https://code.angularjs.org/1.5.8/angular-messages.js \
+#     https://code.angularjs.org/1.5.8/angular-mocks.js \
+#     https://code.angularjs.org/1.5.8/angular-parse-ext.js \
+#     https://code.angularjs.org/1.5.8/angular-resource.js \
+#     https://code.angularjs.org/1.5.8/angular-route.js \
+#     https://code.angularjs.org/1.5.8/angular-sanitize.js \
+#     https://code.angularjs.org/1.5.8/angular-touch.js \
+#     https://code.angularjs.org/1.5.8/angular.js \
+#     \
+#     https://code.angularjs.org/1.6.5/angular-animate.js \
+#     https://code.angularjs.org/1.6.5/angular-aria.js \
+#     https://code.angularjs.org/1.6.5/angular-cookies.js \
+#     https://code.angularjs.org/1.6.5/angular-loader.js \
+#     https://code.angularjs.org/1.6.5/angular-message-format.js \
+#     https://code.angularjs.org/1.6.5/angular-messages.js \
+#     https://code.angularjs.org/1.6.5/angular-mocks.js \
+#     https://code.angularjs.org/1.6.5/angular-parse-ext.js \
+#     https://code.angularjs.org/1.6.5/angular-resource.js \
+#     https://code.angularjs.org/1.6.5/angular-route.js \
+#     https://code.angularjs.org/1.6.5/angular-sanitize.js \
+#     https://code.angularjs.org/1.6.5/angular-scenario.js \
+#     https://code.angularjs.org/1.6.5/angular-touch.js \
+#     https://code.angularjs.org/1.6.5/angular.js; \
+#   chmod -R a+r .;
 
-RUN ln -s /home/codewarrior /workspace
+RUN ln -s /home/bestfly /workspace
 ENV NPM_CONFIG_LOGLEVEL warn
 
 WORKDIR /runner
 COPY package.json package.json
-RUN npm install && npm install --only=dev && npm dedupe
+RUN pnpm install && pnpm install --only=dev && pnpm dedupe
 
 COPY *.js ./
 COPY lib/*.js lib/
@@ -151,8 +146,8 @@ COPY typings/main/ambient /runner/typings
 COPY entrypoint.sh entrypoint.sh
 RUN chmod +x entrypoint.sh
 
-USER codewarrior
-ENV USER=codewarrior HOME=/home/codewarrior
+USER bestfly
+ENV USER=bestfly HOME=/home/bestfly
 ENV NODE_PATH=/usr/lib/node_modules:/runner/node_modules
 
 # Run the test suite to make sure this thing works
